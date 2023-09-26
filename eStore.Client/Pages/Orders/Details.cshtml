@@ -1,0 +1,59 @@
+﻿@page
+@model eStore.Client.Pages.Orders.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Order</h4>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    OrderId
+                </th>
+                <th>
+                    ProductId
+                </th>
+                <th>
+                    UnitPrice
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Discounts
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Order.OrderDetails)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OrderId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UnitPrice)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Quantity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Discount)
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        <a asp-page="./Index">Back to List</a>
+    </div>

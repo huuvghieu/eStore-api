@@ -1,0 +1,58 @@
+﻿@page
+@model eStore.Client.Pages.Orders.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Orders[0].OrderDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orders[0].RequiredDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orders[0].ShippedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orders[0].Freight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orders[0].Member)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Orders) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequiredDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShippedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Freight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Member.Email)
+            </td>
+            <td>
+                <a asp-page="./Details" asp-route-id="@item.OrderId">Details</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
