@@ -9,6 +9,7 @@ using eStore.Data.Entity;
 using eStore.Service.Models.ResponseModels;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using eStore.Client.Helpers;
 
 namespace eStore.Client.Pages.Orders
 {
@@ -30,6 +31,8 @@ namespace eStore.Client.Pages.Orders
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            var jwtToken = SessionHelper.GetObjectFromJson<string>(HttpContext.Session, "JWTToken");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
             HttpResponseMessage response = await client.GetAsync($"{OrderApiUrl}/{id}");
 
             string strData = await response.Content.ReadAsStringAsync();

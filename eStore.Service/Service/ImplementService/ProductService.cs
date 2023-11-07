@@ -51,6 +51,12 @@ namespace eStore.Service.Service.ImplementService
             }
         }
 
+        public async Task<OrderDetailRequestModel> GetCartItemsByProductId(int id)
+        {
+            var product = await ProductRepository.Instance.GetProductById(id);
+            return _mapper.Map<Product, OrderDetailRequestModel>(product);
+        }
+
         public async Task<ProductResponseModel> GetProductById(int id)
         {
             try

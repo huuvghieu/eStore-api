@@ -62,7 +62,8 @@ namespace eStore.Data.Repository
         {
             try
             {
-                var product = await _context.Products.AsNoTracking().Where(x => x.ProductId == id).SingleOrDefaultAsync();
+                var product = await _context.Products.AsNoTracking().Include(x => x.Category)
+                                        .Include(x => x.OrderDetails).Where(x => x.ProductId == id).SingleOrDefaultAsync();
                 return product;
             }
             catch (Exception ex)

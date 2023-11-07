@@ -26,7 +26,6 @@ namespace eStore.Client.Pages.Products
         public CreateProductRequestModel Product { get; set; } = default!;
 
 
-
         public CreateModel()
         {
             client = new HttpClient();

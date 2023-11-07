@@ -50,9 +50,10 @@ namespace eStore.Data.Repository
         {
             try
             {
-                return _context.Orders.AsNoTracking()
+                var orders = _context.Orders.AsNoTracking()
                                 .Include(x => x.OrderDetails)
                                 .Include(x => x.Member);
+                return orders;
             }
             catch (Exception ex)
             {

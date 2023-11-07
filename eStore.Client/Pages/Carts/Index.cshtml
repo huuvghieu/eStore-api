@@ -1,0 +1,55 @@
+﻿@page
+@model eStore.Client.Pages.Carts.IndexModel
+@{
+}
+<div class="container">
+    <div class="row">
+        @foreach (var item in Model.Product)
+        {
+            <div class="col-md-4 mb-3">
+                <div style="height: 430px" class="card">
+                    <div class="card-body">
+                        <h5 style="text-align: center; height: 40px" class="card-title">@item.ProductName</h5>
+                        <p class="card-text text-hide">@item.ProductId</p>
+                        <p class="card-text text-right font-weight-bold">Price @item.UnitPrice VND</p>
+                        <p class="card-text text-right font-weight-bold">Units in Stock: @item.UnitsInStock</p>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div style="text-align: center">
+                                <button type="button" onclick="addtoCart(@item.ProductId, 1)" class="btn btn-primary">Add to Order</button>
+                            </div>
+                        }
+                        else if (User.IsInRole("Member"))
+                        {
+                            <div style="text-align: center">
+                                <button type="button" onclick="addtoCart(@item.ProductId, 1)" class="btn btn-primary">Add to Cart</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div style="text-align: center">
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function addtoCart(productId, quantity) {
+        $.ajax({
+            url: 'Carts/Index?handler=AddToCart',
+            type: 'GET',
+            data: { productId: productId, quantity: quantity },
+            success: function (result) {
+                alert(result.message);
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    }
+</script>

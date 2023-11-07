@@ -20,6 +20,8 @@ namespace eStore.Service.Service.InterfaceService
 
         public Task<ProductResponseModel> DeleteProduct(int productId);
 
+        Task<OrderDetailRequestModel> GetCartItemsByProductId(int id);
+
         public Task<IEnumerable<ProductResponseModel>> SearchProduct(string searchString);
     }
 }

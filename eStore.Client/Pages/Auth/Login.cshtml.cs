@@ -27,7 +27,7 @@ namespace eStore.Client.Pages.Auth
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            AuthApiUrl = "https://localhost:7248/api/authuser/login";
+            AuthApiUrl = "https://localhost:7248/api/auth/login";
 
 		}
         public async Task<IActionResult> OnPostAsync()

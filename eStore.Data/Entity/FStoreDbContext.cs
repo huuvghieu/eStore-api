@@ -148,7 +148,7 @@ namespace eStore.Data.Entity
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-        private String GetConnectionString()
+        private string GetConnectionString()
         {
             IConfiguration config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

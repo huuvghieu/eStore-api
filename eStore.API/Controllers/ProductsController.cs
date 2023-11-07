@@ -1,8 +1,10 @@
 ﻿using eStore.Service.Models.RequestModels;
 using eStore.Service.Models.ResponseModels;
+using eStore.Service.Service.ImplementService;
 using eStore.Service.Service.InterfaceService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using System.Net;
 
 namespace eStore.API.Controllers
@@ -18,14 +20,18 @@ namespace eStore.API.Controllers
             _service = service;
         }
 
+        [AllowAnonymous]
         [HttpGet]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<ProductResponseModel>>> GetProducts()
         {
             var rs = await _service.GetProducts();
             return Ok(rs);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
+        [EnableQuery]
         public async Task<ActionResult<ProductResponseModel>> GetProductById(int id)
         {
             var rs = await _service.GetProductById(id);
@@ -66,6 +72,18 @@ namespace eStore.API.Controllers
         {
             var rs = (await _service.DeleteProduct(id));
             return Ok(rs);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id}/cart")]
+        public async  Task<ActionResult<OrderDetailRequestModel>> GetCartItemsByProductId(int id)
+        {
+            var cart = _service.GetCartItemsByProductId(id);
+            if (cart != null)
+            {
+                return Ok(cart);
+            }
+            return NotFound("Can not find this product with id " + id);
         }
     }
 }

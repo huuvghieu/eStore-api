@@ -13,6 +13,7 @@ namespace eStore.API.Mapper
             CreateMap<Product, ProductResponseModel>().ReverseMap();
             CreateMap<CreateProductRequestModel, Product>();
             CreateMap<UpdateProductRequestModel, Product>();
+            CreateMap<Product, OrderDetailRequestModel>().ReverseMap();
             #endregion
 
             #region Category

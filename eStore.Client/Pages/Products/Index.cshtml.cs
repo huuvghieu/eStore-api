@@ -17,6 +17,8 @@ namespace eStore.Client.Pages.Products
         private readonly HttpClient client = null;
         private string ProductApiUrl = "";
 
+        public string CurrentFilter { get; set; }
+
         public IList<ProductResponseModel> Product { get; set; } = default!;
         public IndexModel()
         {
@@ -25,18 +27,56 @@ namespace eStore.Client.Pages.Products
             client.DefaultRequestHeaders.Accept.Add(contentType);
             ProductApiUrl = "https://localhost:7248/api/products";
         }
-
-
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetProductsAsync(int currentPage, int pageSize, string search)
         {
-            HttpResponseMessage response = await client.GetAsync(ProductApiUrl);
-            string strData = await response.Content.ReadAsStringAsync();
-
             var options = new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true,
+                PropertyNameCaseInsensitive = true
             };
-            Product = JsonSerializer.Deserialize<List<ProductResponseModel>>(strData, options);
+
+            string apiUrl = ProductApiUrl;
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                decimal price = 0;
+                bool isNumber = decimal.TryParse(search, out price);
+
+                apiUrl +=
+                    $"?filter=contains(productName,'{search}'){(isNumber ? $" or unitPrice eq {price}" : "")}";
+            }
+
+            HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string strData = await response.Content.ReadAsStringAsync();
+                var products = JsonSerializer.Deserialize<List<ProductResponseModel>>(strData, options);
+                int totalItems = products.Count();
+                var pagedProducts = products
+                    .OrderByDescending(a => a.ProductId)
+                    .Skip((currentPage - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                return new JsonResult(new { products = pagedProducts, totalItems });
+            }
+            else
+            {
+                return new JsonResult(null);
+            }
         }
+
+
+        //public async Task OnGetAsync()
+        //{
+        //    HttpResponseMessage response = await client.GetAsync(ProductApiUrl);
+        //    string strData = await response.Content.ReadAsStringAsync();
+
+        //    var options = new JsonSerializerOptions
+        //    {
+        //        PropertyNameCaseInsensitive = true,
+        //    };
+        //    Product = JsonSerializer.Deserialize<List<ProductResponseModel>>(strData, options);
+        //}
     }
 }

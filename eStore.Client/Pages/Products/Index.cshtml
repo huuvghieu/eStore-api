@@ -5,52 +5,143 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Product Management</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create">Create New Product</a>
 </p>
-<table class="table">
+<form id="searchForm" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Search by Name/Price:
+            <input id="searchInput" type="text" name="search" value="@Model.CurrentFilter" />
+            <input id="searchButton" type="submit" value="Search" class="btn btn-primary" /> |
+            <button id="backButton" class="btn btn-primary">
+                <a style="color: white">Back to full list</a>
+            </button>
+        </p>
+    </div>
+</form>
+<table id="apiTable" class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Product[0].ProductName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product[0].Weight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product[0].UnitPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product[0].UnitsInStock)
-            </th>
-
+            <th>ProductName</th>
+            <th>Category</th>
+            <th>Weight</th>
+            <th>UnitPrice</th>
+            <th>UnitsInStock</th>
             <th></th>
         </tr>
     </thead>
-    <tbody>
-@foreach (var item in Model.Product) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Weight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UnitPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UnitsInStock)
-            </td>
-
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ProductId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ProductId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ProductId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
+    <tbody></tbody>
 </table>
+
+<div id="pagination">
+    <a id="prevBtn" class="btn btn-primary disabled">Previous</a>
+    <a id="nextBtn" class="btn btn-primary">Next</a>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Xử lý sự kiện submit form search
+            $("#searchForm").submit(function (e) {
+                e.preventDefault(); // Ngăn chặn hành vi submit form mặc định
+
+                var searchValue = $("#searchInput").val(); // Lấy giá trị search từ input
+                var currentPage = 1; // Reset lại trang hiện tại về 1 khi thực hiện search
+
+                // Gọi hàm ShowProducts để hiển thị kết quả tìm kiếm
+                ShowProducts(currentPage, searchValue);
+            });
+
+            // Xử lý sự kiện click nút Back to full list
+            $("#backButton").click(function (e) {
+                e.preventDefault();
+
+                var currentPage = 1; // Reset lại trang hiện tại về 1 khi quay lại full list
+
+                // Gọi hàm ShowProducts để hiển thị full list
+                ShowProducts(currentPage, "");
+            });
+
+            // Gọi hàm ShowProducts khi trang được load lần đầu
+            ShowProducts(1, "");
+
+            function ShowProducts(page, search) {
+                $("table tbody").html("");
+                $.ajax({
+                    url: "/Products?handler=Products",
+                    type: "GET",
+                    data: {
+                        currentPage: page,
+                        pageSize: 5,
+                        search: search
+                    },
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+                        $.each(result.products, function (index, value) {
+                            var category = value.category ? value.category.categoryName : "";
+                            var productName = value.productName ? value.productName : "";
+                            var weight = value.weight ? value.weight : "";
+                            var unitPrice = value.unitPrice ? value.unitPrice : "";
+                            var unitsInStock = value.unitsInStock ? value.unitsInStock : "";
+
+                            var editLink = "Products/Edit?id=" + value.productId;
+                            var detailsLink = "Products/Details?id=" + value.productId;
+                            var deleteLink = "Products/Delete?id=" + value.productId;
+
+                            var row = $("<tr>").appendTo("tbody");
+                            $("<td>").text(productName).appendTo(row);
+                            $("<td>").text(category).appendTo(row);
+                            $("<td>").text(weight).appendTo(row);
+                            $("<td>").text(unitPrice).appendTo(row);
+                            $("<td>").text(unitsInStock).appendTo(row);
+                            $("<td>").html("<a href='" + editLink + "'>Edit</a> | <a href='" 
+                            + detailsLink + "'>Details</a> | <a href='" 
+                            + deleteLink + "'>Delete</a>").appendTo(row);
+                        });
+
+                        currentPage = page;
+                        UpdatePagination(currentPage, result.totalItems);
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error: " + status + " " + error);
+                        console.log(xhr);
+                    }
+                });
+            }
+
+            function UpdatePagination(currentPage, totalItems) {
+                $("#prevBtn").removeClass("disabled");
+                $("#nextBtn").removeClass("disabled");
+
+                var totalPages = Math.ceil(totalItems / 5);
+
+                if (currentPage === 1) {
+                    $("#prevBtn").addClass("disabled");
+                }
+
+                if (currentPage === totalPages) {
+                    $("#nextBtn").addClass("disabled");
+                }
+
+                $("#prevBtn").attr("data-page", currentPage - 1);
+                $("#nextBtn").attr("data-page", currentPage + 1);
+            }
+
+            $("#prevBtn").click(function () {
+                currentPage--;
+                ShowProducts(currentPage);
+            });
+
+            $("#nextBtn").click(function () {
+                currentPage++;
+                ShowProducts(currentPage);
+            });
+        });
+
+    </script>
+}
